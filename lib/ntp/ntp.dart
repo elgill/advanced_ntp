@@ -4,7 +4,7 @@ const _defaultLookup = 'time.google.com';
 
 class NTP {
   /// Return NTP delay in milliseconds
-  static Future<int> getNtpOffset({
+  static Future<Map<String, int>> getNtpOffset({
     String lookUpAddress = _defaultLookup,
     int port = 123,
     DateTime? localTime,
@@ -58,11 +58,11 @@ class NTP {
     }
 
     if (packet == null) {
-      return Future<int>.error('Received empty response.');
+      return Future<Map<String, int>>.error('Received empty response.');
     }
 
-    final int offset = _parseData(packet!.data, DateTime.now());
-    return offset;
+    final Map<String, int> result = _parseData(packet!.data, DateTime.now());
+    return result;
   }
 
   /// Get current NTP time
@@ -72,26 +72,35 @@ class NTP {
     Duration? timeout,
   }) async {
     final DateTime localTime = DateTime.now();
-    final int offset = await getNtpOffset(
+    final Map<String, int> offsetData = await getNtpOffset(
       lookUpAddress: lookUpAddress,
       port: port,
       localTime: localTime,
       timeout: timeout,
     );
 
-    return localTime.add(Duration(milliseconds: offset));
+    return localTime.add(Duration(milliseconds: offsetData['offset']!));
   }
 
-  /// Parse data from datagram socket.
-  static int _parseData(List<int> data, DateTime time) {
+  /// Parse data from datagram socket and calculate precision.
+  static Map<String, int> _parseData(List<int> data, DateTime time) {
     final _NTPMessage ntpMessage = _NTPMessage(data);
     final double destinationTimestamp =
         (time.millisecondsSinceEpoch / 1000.0) + 2208988800.0;
     final double localClockOffset =
         ((ntpMessage._receiveTimestamp - ntpMessage._originateTimestamp) +
-                (ntpMessage._transmitTimestamp - destinationTimestamp)) /
+            (ntpMessage._transmitTimestamp - destinationTimestamp)) /
             2;
 
-    return (localClockOffset * 1000).toInt();
+    final double delta =
+        (destinationTimestamp - ntpMessage._originateTimestamp) -
+            (ntpMessage._transmitTimestamp - ntpMessage._receiveTimestamp);
+
+    final double error = delta / 2.0;
+
+    return {
+      'offset': (localClockOffset * 1000).toInt(),
+      'error': (error * 1000).toInt()
+    };
   }
 }
