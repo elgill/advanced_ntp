@@ -1,4 +1,4 @@
-part of ntp;
+part of advanced_ntp;
 
 /// This class represents a NTP message, as specified in RFC 2030.  The message
 /// format is compatible with all versions of NTP and SNTP.
@@ -37,13 +37,13 @@ part of ntp;
 ///
 /// @author Adam Buckley
 /// Rewritten in dart by: Luka Knezic 2018
-class _NTPMessage {
+class NTPMessage {
   /// Constructs a NtpMessage in client -> server mode, and sets the
   /// transmit timestamp to the current time.
   ///
   /// If byte array (raw NTP packet) is passed to constructor then the
   /// data is filled from a raw NTP packet.
-  _NTPMessage([List<int>? array]) {
+  NTPMessage([List<int>? array]) {
     if (array != null) {
       _leapIndicator = array[0] >> 6 & 0x3;
       _version = array[0] >> 3 & 0x7;

@@ -1,7 +1,9 @@
-[![pub package](https://img.shields.io/pub/v/ntp.svg)](https://pub.dartlang.org/packages/ntp)
-[![CodeFactor](https://www.codefactor.io/repository/github/knezzz/ntp/badge)](https://www.codefactor.io/repository/github/knezzz/ntp)
 
-# NTP
+# Advanced NTP
+
+This fork of the original NTP plugin for Dart offers enhanced functionality to get precise time from the Network Time Protocol (NTP).
+
+Note: This is a fork of the original NTP package. The goal of this fork is to provide more advanced features not present in the original package.
 
 Plugin that allows you to get precise time from Network Time Protocol (NTP).
 It implements whole NTP protocol in dart.
@@ -23,7 +25,7 @@ Using int offset from getNtpTime()
 - default port is 123
 ```dart
   DateTime startDate = new DateTime.now().toLocal();
-  int offset = await NTP.getNtpOffset(localTime: startDate);
+  int offset = await getNtpOffset(localTime: startDate);
   print('NTP DateTime offset align: ${startDate.add(new Duration(milliseconds: offset))}');
 ```
 
