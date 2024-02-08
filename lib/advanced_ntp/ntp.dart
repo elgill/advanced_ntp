@@ -2,7 +2,7 @@ part of advanced_ntp;
 
 const _defaultLookup = 'time.google.com';
 
-Future<NTPMessage> _getRawNtpMessage({
+Future<_NTPMessage> _getRawNtpMessage({
   String lookUpAddress = _defaultLookup,
   int port = 123,
   DateTime? localTime,
@@ -25,7 +25,7 @@ Future<NTPMessage> _getRawNtpMessage({
   final RawDatagramSocket datagramSocket =
   await RawDatagramSocket.bind(clientAddress, 0);
 
-  final NTPMessage senderNtpMessage = NTPMessage();
+  final _NTPMessage senderNtpMessage = _NTPMessage();
   final List<int> buffer = senderNtpMessage.toByteArray();
   final DateTime time = localTime ?? DateTime.now();
   senderNtpMessage.encodeTimestamp(buffer, 40,
@@ -56,10 +56,10 @@ Future<NTPMessage> _getRawNtpMessage({
   }
 
   if (packet == null) {
-    return Future<NTPMessage>.error('Received empty response.');
+    return Future<_NTPMessage>.error('Received empty response.');
   }
 
-  final NTPMessage receivedNtpMessage = NTPMessage(packet!.data);
+  final _NTPMessage receivedNtpMessage = _NTPMessage(packet!.data);
   return receivedNtpMessage;
 }
 
@@ -69,7 +69,7 @@ Future<NTPResponse> getNtpData({
   DateTime? localTime,
   Duration? timeout,
 }) async {
-  final NTPMessage receivedNtpMessage = await _getRawNtpMessage(
+  final _NTPMessage receivedNtpMessage = await _getRawNtpMessage(
     lookUpAddress: lookUpAddress,
     port: port,
     localTime: localTime,
@@ -105,7 +105,7 @@ Future<DateTime> now({
 }
 
 /// Parse data from datagram socket and calculate precision.
-int _parseOffset(NTPMessage ntpMessage, double destinationTimestamp) {
+int _parseOffset(_NTPMessage ntpMessage, double destinationTimestamp) {
   final double localClockOffset =
       ((ntpMessage._receiveTimestamp - ntpMessage._originateTimestamp) +
           (ntpMessage._transmitTimestamp - destinationTimestamp)) /
@@ -114,7 +114,7 @@ int _parseOffset(NTPMessage ntpMessage, double destinationTimestamp) {
   return (localClockOffset * 1000).toInt();
 }
 
-int _calculateRTT(NTPMessage message, double clientReceiveTimestamp) {
+int _calculateRTT(_NTPMessage message, double clientReceiveTimestamp) {
   final double t1 = message.originateTimestamp;
   final double t2 = message.receiveTimestamp;
   final double t3 = message.transmitTimestamp;

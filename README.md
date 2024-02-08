@@ -10,9 +10,9 @@ It implements whole NTP protocol in dart.
 
 This is useful for time-based events since DateTime.now() returns the time of the device.
 Users sometimes change their internal clock and using DateTime.now() can give
-wrong result. You can just get clock offset [NTP.getNtpTime] and apply it manually
+wrong result. You can just get clock offset [getNtpTime()] and apply it manually
 to DateTime.now() object when needed (just add offset as milliseconds duration), or you can get
-already formatted [DateTime] object from [NTP.now].
+already formatted [DateTime] object from [now()].
 
 By default lookup address for NTP is: time.google.com
 
@@ -31,7 +31,7 @@ Using int offset from getNtpTime()
 
 Using DateTime from now
 ```dart
-  DateTime startDate = await NTP.now();
+  DateTime startDate = await now();
   print('NTP DateTime: ${startDate}');
 ```
 
@@ -46,4 +46,12 @@ Using DateTime from now
 ```
 ```dart
   Future<DateTime> now();
+```
+```dart
+Future<NTPResponse> getNtpData({
+    String lookUpAddress = _defaultLookup,
+    int port = 123,
+    DateTime? localTime,
+    Duration? timeout,
+});
 ```

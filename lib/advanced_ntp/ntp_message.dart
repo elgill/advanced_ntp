@@ -37,13 +37,13 @@ part of advanced_ntp;
 ///
 /// @author Adam Buckley
 /// Rewritten in dart by: Luka Knezic 2018
-class NTPMessage {
+class _NTPMessage {
   /// Constructs a NtpMessage in client -> server mode, and sets the
   /// transmit timestamp to the current time.
   ///
   /// If byte array (raw NTP packet) is passed to constructor then the
   /// data is filled from a raw NTP packet.
-  NTPMessage([List<int>? array]) {
+  _NTPMessage([List<int>? array]) {
     if (array != null) {
       _leapIndicator = array[0] >> 6 & 0x3;
       _version = array[0] >> 3 & 0x7;
